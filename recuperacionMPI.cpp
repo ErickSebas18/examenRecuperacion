@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     int width, height, channels;
     uint8_t *rgb_pixels;
     if (rank == 0) {
-        rgb_pixels = stbi_load("./image01.jpg", &width, &height, &channels, STBI_rgb);
+        rgb_pixels = stbi_load("image01.jpg", &width, &height, &channels, STBI_rgb);
         if (!rgb_pixels) {
             printf("Error al cargar la imagen.\n");
             MPI_Finalize();
@@ -30,12 +30,12 @@ int main(int argc, char *argv[]) {
         block++;
     }
 
-    uint8_t *my_gray_pixels = (uint8_t *)malloc(width * padding);
+    uint8_t *gray_pixels = (uint8_t *)malloc(width * padding);
 
     MPI_Scatter(rgb_pixels, width * blocksize * 3, MPI_UNSIGNED_CHAR, 
                 rgb_pixels + rank * blocksize * width * 3, 
                 block * width * 3, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
-    // Convertir el segmento de imagen a escala de grises
+
     for (int i = 0; i < block * width; i++) {
         int r = rgb_pixels[i * 3];
         int g = rgb_pixels[i * 3 + 1];
